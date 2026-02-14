@@ -60,6 +60,6 @@ class AudioInferenceEngine:
             return ai_probability, embedding.cpu().numpy()
 
         except Exception as e:
+            # Log and fail fast — do not return fabricated predictions
             print(f"Inference Error: {e}")
-            # Fallback: Return 0.5 (Unsure) instead of crashing the API
-            return 0.5, np.zeros((1, 768))
+            raise RuntimeError(f"Inference failed: {str(e)}") from e
