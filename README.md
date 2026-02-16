@@ -52,7 +52,7 @@ set API_KEY=your-secret-key            # Windows
 4. **Generate human baseline (first time only)**
 
 Place human voice samples (.mp3/.wav/.flac) in `data/human/`, then run:
-
+(For India AI Impact Buildathon the only supported format is mp3, so use only mp3 audio file to get correct results)
 ```bash
 python humanity.py
 ```
@@ -182,7 +182,7 @@ Classifies an audio clip as human or AI-generated.
 |-------|------|----------|-------------|
 | `audioBase64` | string | Yes | Base64-encoded audio file (WAV, MP3, FLAC) |
 | `language` | string | No | Language of the audio. Default: `"English"`. Supported: English, Tamil, Hindi, Malayalam, Telugu |
-
+(For India AI Impact Hackathon the only supported format is mp3, so use only mp3 audio file to get correct results)
 **Success Response (200):**
 ```json
 {
