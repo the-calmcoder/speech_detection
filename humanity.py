@@ -7,42 +7,35 @@ import warnings
 # Suppress Version Warnings
 warnings.filterwarnings("ignore")
 
-# --- CONFIGURATION ---
-# Use absolute path to avoid "Folder not found" errors
-# Assuming you are running this from the 'Voice_ai' folder
+
 current_dir = os.getcwd()
 DATA_PATH = os.path.join(current_dir, "data", "human")
 OUTPUT_FILE = "human_baseline.json"
 
 def get_features(file_path):
     try:
-        # Load audio (suppress warnings)
-        y, sr = librosa.load(file_path, sr=16000, mono=True)
+        y, sr = librosa.load(file_path, sr=16000, mono=True)     # Load audio (suppress warnings)
         
-        # --- FIX: USE KEYWORD ARGUMENTS (y=y) ---
-        # Librosa 0.10+ requires 'y=' for all feature functions
-        
-        # 1. Zero Crossing Rate
-        zcr_raw = librosa.feature.zero_crossing_rate(y=y)
+        zcr_raw = librosa.feature.zero_crossing_rate(y=y)        # Zero Crossing Rate
         zcr = np.mean(zcr_raw)
         
-        # 2. Spectral Flatness
-        flatness_raw = librosa.feature.spectral_flatness(y=y)
+       
+        flatness_raw = librosa.feature.spectral_flatness(y=y)    # Spectral Flatness
         flatness = np.mean(flatness_raw)
         
-        # 3. Spectral Centroid
-        centroid_raw = librosa.feature.spectral_centroid(y=y, sr=sr)
+    
+        centroid_raw = librosa.feature.spectral_centroid(y=y, sr=sr)   # Spectral Centroid
         centroid = np.mean(centroid_raw)
         
         return [zcr, flatness, centroid]
     except Exception as e:
-        print(f"⚠️ Failed to process {os.path.basename(file_path)}: {e}")
+        print(f" Failed to process {os.path.basename(file_path)}: {e}")
         return None
 
-print(f"🧠 Profiling Human Baseline from: {DATA_PATH}")
+print(f" Profiling Human Baseline from: {DATA_PATH}")
 
 if not os.path.exists(DATA_PATH):
-    print(f"❌ CRITICAL ERROR: The folder '{DATA_PATH}' does not exist.")
+    print(f" CRITICAL ERROR: The folder '{DATA_PATH}' does not exist.")
     print("   Make sure you are running this script from the 'Voice_ai' folder.")
     exit()
 
@@ -58,7 +51,7 @@ for f in files:
 
 # Check if we actually got data
 if len(features_list) == 0:
-    print("\n❌ ERROR: No valid features extracted.")
+    print("\n ERROR: No valid features extracted.")
     print("   This likely means your librosa version mismatch is still breaking things.")
     print("   But this script SHOULD have fixed it.")
     exit()
@@ -77,5 +70,5 @@ profile = {
 with open(OUTPUT_FILE, "w") as f:
     json.dump(profile, f)
 
-print(f"\n✅ Success! Baseline saved to {OUTPUT_FILE}")
+print(f"\n Success! Baseline saved to {OUTPUT_FILE}")
 print(json.dumps(profile, indent=2))

@@ -3,6 +3,7 @@ import torch.nn as nn
 from transformers import Wav2Vec2FeatureExtractor, HubertModel
 import os
 import numpy as np
+from audio_processing import segment_audio  # Added import
 
 class AudioInferenceEngine:
     def __init__(self, model_name="facebook/hubert-base-ls960", weights_path="classifier_weights.pth"):
@@ -48,7 +49,7 @@ class AudioInferenceEngine:
             inputs = {k: v.to(self.device) for k, v in inputs.items()}
 
             # Inference
-            with torch.no_grad():
+            with torch.inference_mode():
                 outputs = self.model(**inputs)
                 # Take mean of hidden states to get a single vector per clip
                 embedding = outputs.last_hidden_state.mean(dim=1)
@@ -63,3 +64,68 @@ class AudioInferenceEngine:
             # Log and fail fast — do not return fabricated predictions
             print(f"Inference Error: {e}")
             raise RuntimeError(f"Inference failed: {str(e)}") from e
+
+    def infer_segments(self, waveform, sample_rate, batch_size=8):
+        """
+        Input: waveform (numpy array or tensor), sample_rate (int)
+        Output: overall_probability, segment_results (list of dicts), overall_embedding
+        """
+        try:
+            if hasattr(waveform, 'numpy'):
+                waveform = waveform.numpy()
+            if len(waveform.shape) > 1:
+                waveform = waveform.squeeze()
+
+            segments = segment_audio(waveform, sample_rate)
+
+            # Batched inference for speed.
+            all_waveforms = [seg[0] for seg in segments]
+            all_probabilities = []
+            all_embeddings = []
+
+            for i in range(0, len(all_waveforms), batch_size):
+                batch_waves = all_waveforms[i:i + batch_size]
+
+                # Tokenize batch.
+                inputs = self.feature_extractor(
+                    batch_waves,
+                    sampling_rate=sample_rate,
+                    return_tensors="pt",
+                    padding=True
+                )
+                inputs = {k: v.to(self.device) for k, v in inputs.items()}
+
+                with torch.inference_mode():
+                    outputs = self.model(**inputs)
+                    # Mean-pool and classify.
+                    embeddings = outputs.last_hidden_state.mean(dim=1)
+                    logits = self.classifier(embeddings)
+                    probs = torch.sigmoid(logits).squeeze(-1)
+
+                all_probabilities.extend(probs.cpu().tolist())
+                all_embeddings.append(embeddings.cpu().numpy())
+
+            # Build segment results.
+            segment_results = []
+            for idx, (_, start_time, end_time) in enumerate(segments):
+                segment_results.append({
+                    "start": start_time,
+                    "end": end_time,
+                    "ai_probability": round(all_probabilities[idx], 4)
+                })
+
+            # Weighted aggregation.
+            probs_arr = np.array(all_probabilities)
+            weights = probs_arr + 0.1
+            overall_probability = float(np.average(probs_arr, weights=weights))
+
+            # Mean embedding across segments.
+            overall_embedding = np.mean(
+                np.concatenate(all_embeddings, axis=0), axis=0, keepdims=True
+            )
+
+            return overall_probability, segment_results, overall_embedding
+
+        except Exception as e:
+            print(f"Segment Inference Error: {e}")
+            raise RuntimeError(f"Segment inference failed: {str(e)}") from e
