@@ -173,17 +173,18 @@ Classifies an audio clip as human or AI-generated.
 **Request Body:**
 ```json
 {
-    "audioBase64": "<base64-encoded-audio>",
-    "language": "English"
+    "language": "English/Tamil/Hindi/Malayalam/Telugu ",
+    "audioFormat": "mp3",
+    "audioBase64": "<audio-base-64-encoded-mp3-file>"
 }
 ```
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `audioBase64` | string | Yes | Base64-encoded audio file (WAV, MP3, FLAC) |
-| `language` | string | No | Language of the audio. Default: `"English"`. Supported: English, Tamil, Hindi, Malayalam, Telugu |
+| `language` | string | Yes | Language of the audio supported: English, Tamil, Hindi, Malayalam, Telugu |
 
-**Success Response (200):**
+**Example Success Response (200):**
 ```json
 {
     "status": "success",
@@ -198,14 +199,14 @@ Classifies an audio clip as human or AI-generated.
 | `classification` | string | `"AI_GENERATED"` or `"HUMAN"` |
 | `confidenceScore` | float | Confidence in the classification (0.0 – 1.0) |
 
-**Error Response (400):**
+**Example Error Response (400):**
 ```json
 {
     "error": "Missing audioBase64"
 }
 ```
 
-**Error Response (401):**
+**Example Error Response (401):**
 ```json
 {
     "error": "Unauthorized"
