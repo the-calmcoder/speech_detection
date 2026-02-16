@@ -51,8 +51,8 @@ set API_KEY=your-secret-key            # Windows
 
 4. **Generate human baseline (first time only)**
 
-Place human voice samples (.mp3/.wav/.flac) in `data/human/`, then run:
-(For India AI Impact Buildathon the only supported format is mp3, so use only mp3 audio file to get correct results)
+-Place human voice samples (.mp3/.wav/.flac) in `data/human/`, then run: }
+-(For India AI Impact Buildathon the only supported format is mp3, so use only mp3 audio file to get correct results)
 ```bash
 python humanity.py
 ```
