@@ -181,7 +181,7 @@ Classifies an audio clip as human or AI-generated.
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `audioBase64` | string | Yes | Base64-encoded audio file (WAV, MP3, FLAC) |
+| `audioBase64` | string | Yes | Base64-encoded audio file (MP3 file converted to Base64) |
 | `language` | string | Yes | Language of the audio supported: English, Tamil, Hindi, Malayalam, Telugu |
 
 **Example Success Response (200):**
