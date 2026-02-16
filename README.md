@@ -19,7 +19,7 @@ A deep learning system for detecting AI-generated speech. The system uses a fine
 ### Prerequisites
 
 - Python 3.10+
-- Docker (recommended for deployment)
+- Docker (recommended for deployment in cloud otherwise it can be deployed locally)
 
 ### Local Setup
 
@@ -44,8 +44,9 @@ pip install -r requirements.txt
 3. **Set the API key**
 
 ```bash
-export API_KEY="your-secret-key"       # Linux/macOS
+export API_KEY="your-secret-key"       # Linux/macOS/while using bash in windows
 set API_KEY=your-secret-key            # Windows
+('your-secret-key' - is your API KEY. Keep it secret and use it while validating API Request)
 ```
 
 4. **Generate human baseline (first time only)**
@@ -76,7 +77,7 @@ python api.py
 
 Server starts at `http://0.0.0.0:5000`.
 
-### Docker Setup
+### Docker Setup (If you are deploying on cloud)
 
 ```bash
 docker build -t voice-detection .
