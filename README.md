@@ -46,8 +46,8 @@ pip install -r requirements.txt
 ```bash
 export API_KEY="your-secret-key"       # Linux/macOS/while using bash in windows
 set API_KEY=your-secret-key            # Windows
-('your-secret-key' - is your API KEY. Keep it secret and use it while validating API Request)
 ```
+'your-secret-key' - is your API KEY. Keep it secret and use it while validating API Request
 
 4. **Generate human baseline (first time only)**
 
